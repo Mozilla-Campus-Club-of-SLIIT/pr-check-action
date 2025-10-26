@@ -34,9 +34,8 @@ runs:
       id: check
       run: |
         echo "output<<EOF" >> $GITHUB_OUTPUT
-        echo test >> $GITHUB_OUTPUT
+        python ${{ github.action_path }}/index.py
         echo "EOF" >> $GITHUB_OUTPUT
-
       env:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
 
