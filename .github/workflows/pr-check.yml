@@ -22,7 +22,7 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Check PR
-        uses: Mozilla-Campus-Club-of-SLIIT@main
+        uses: Mozilla-Campus-Club-of-SLIIT/pr-check-action@main
         with:
           token: ${{ steps.app-token.outputs.bot_token }}
           body: |
