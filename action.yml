@@ -43,6 +43,6 @@ runs:
       with:
         issue-number: 1
         comment-id: ${{ steps.fc.outputs.comment-id }}
-        token: ${{ steps.app-token.outputs.bot_token }}
+        token: ${{ inputs.token }}
         body: ${{ steps.check.outputs.output }}
         edit-mode: replace
