@@ -1,0 +1,42 @@
+name: Deploy release
+
+run-name: Deploy ${{ github.repository }}
+
+on:
+  release:
+    types: published
+  workflow_dispatch:
+
+jobs:
+  # Since deployment uses a dedicated account, we only need to pull the repository from that account.
+  # Deployments are configured to run automatically.
+  deploy:
+    runs-on: ubuntu-latest
+
+    outputs:
+      repo_name: ${{ steps.extract.outputs.repo_name }}
+
+    steps:
+      - name: Extract repo name
+        id: extract
+        run: echo "repo_name=${GITHUB_REPOSITORY#*/}" >> $GITHUB_OUTPUT
+
+      - name: Display repo name
+        run: echo ${{ steps.extract.outputs.repo_name }} ${{ vars.SHARED_ACCOUNT_NAME }} ${{ secrets.SHARED_ACCOUNT_TOKEN }}
+
+      - uses: actions/checkout@v5
+        with:
+          repository: "${{ vars.SHARED_ACCOUNT_NAME }}/${{ steps.extract.outputs.repo_name }}"
+          fetch_depth: 0
+          token: ${{ secrets.SHARED_ACCOUNT_TOKEN }}
+
+      - name: Pull latest changes
+        run: |
+          git remote add upstream https://github.com/Mozilla-Campus-Club-of-SLIIT/${{ steps.extract.outputs.repo_name }}
+          git fetch upstream
+          git checkout main
+          git reset --hard upstream/main
+
+      - name: Push changes
+        run: git push origin main --force
+
