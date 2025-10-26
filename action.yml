@@ -10,6 +10,9 @@ inputs:
     description: The account's name which the command check review should be published. Use [bot] suffix for apps.
     required: false
     default: github-actions[bot]
+  pr-id:
+    description: PR ID
+    required: true
 runs:
   using: composite
   steps:
@@ -17,7 +20,7 @@ runs:
       uses: peter-evans/find-comment@v3
       id: fc
       with:
-        issue-number: ${{ github.events.pull_request.number }}
+        issue-number: ${{ inputs.pr-id }}
         comment-author: ${{ inputs.comment-author }}
         token: ${{ inputs.token }}
     
