@@ -30,6 +30,6 @@ runs:
       run: python --version
 
     - name: Check PR
-      run: python index.py
+      run: python ${{ github.action_path}}/index.py
       env:
         PR_DESCRIPTION: ${{ github.events.pull_request.body }}
