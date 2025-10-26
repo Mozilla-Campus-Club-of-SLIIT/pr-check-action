@@ -31,6 +31,16 @@ runs:
       run: python --version
 
     - name: Check PR
-      run: python ${{ github.action_path}}/index.py
+      id: check
+      run: echo $(output="python ${{ github.action_path}}/index.py") >> $GITHUB_OUTPUT
       env:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
+
+    - name: Create comment
+      uses: peter-evans/create-or-update-comment@v5
+      with:
+        issue-number: 1
+        comment-id: ${{ steps.fc.outputs.comment-id }}
+        token: ${{ steps.app-token.outputs.bot_token }}
+        body: ${{ steps.check.outputs.output }}
+        edit-mode: replace
