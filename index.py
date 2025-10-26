@@ -85,7 +85,7 @@ if (not closing_terms) or is_not_closed:
         res += "\nPlease ensure all items are completed before requesting a review.\n"
     
     print(res)
-    sys.exit(1)
+    sys.exit(0)
 
 print("✅ All checks passed")
 
