@@ -36,6 +36,8 @@ runs:
       env:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
 
+    - run: echo "${{ steps.check.outputs.output }}"
+
     - name: Create comment
       uses: peter-evans/create-or-update-comment@v5
       with:
