@@ -32,4 +32,4 @@ runs:
     - name: Check PR
       run: python ${{ github.action_path}}/index.py
       env:
-        PR_DESCRIPTION: ${{ github.events.pull_request.body }}
+        PR_DESCRIPTION: ${{ github.event.pull_request.body }}
