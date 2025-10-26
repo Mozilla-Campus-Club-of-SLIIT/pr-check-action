@@ -1,0 +1,22 @@
+name: PR Check
+author: Mozilla-Campus-Club-of-SLIIT
+description: Ensures PR compliance with project guidelines
+inputs:
+  token:
+    description: GITHUB_TOKEN or repo scoped PAT
+    required: false
+    default: ${{ github.token }}
+  comment-author:
+    description: The account's name which the command check review should be published. Use [bot] suffix for apps.
+    required: false
+    default: github-actions[bot]
+runs:
+  using: composite
+  steps:
+    - name: Find Comment
+      uses: peter-evans/find-comment@v3
+      id: fc
+      with:
+        issue-number: 1
+        comment-author: ${{ inputs.comment-author }}
+        token: ${{ inputs.token }}
