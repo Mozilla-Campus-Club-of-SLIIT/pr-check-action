@@ -32,7 +32,7 @@ runs:
 
     - name: Check PR
       id: check
-      run: echo $(output="python ${{ github.action_path}}/index.py") >> $GITHUB_OUTPUT
+      run: echo output="$(python ${{ github.action_path}}/index.py)" >> $GITHUB_OUTPUT
       env:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
 
