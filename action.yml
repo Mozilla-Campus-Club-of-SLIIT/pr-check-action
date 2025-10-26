@@ -34,7 +34,7 @@ runs:
       id: check
       run: |
         echo "output<<EOF" >> $GITHUB_OUTPUT
-        python ${{ github.action_path }}/index.py >> $GITHUB_OUTPUT
+        echo test >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
 
       env:
