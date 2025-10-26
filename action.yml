@@ -10,9 +10,6 @@ inputs:
     description: The account's name which the command check review should be published. Use [bot] suffix for apps.
     required: false
     default: github-actions[bot]
-  pr-id:
-    description: PR ID
-    required: true
 runs:
   using: composite
   steps:
@@ -20,7 +17,7 @@ runs:
       uses: peter-evans/find-comment@v3
       id: fc
       with:
-        issue-number: ${{ inputs.pr-id }}
+        issue-number: ${{ github.events.pull_request.number }}
         comment-author: ${{ inputs.comment-author }}
         token: ${{ inputs.token }}
     
@@ -33,22 +30,17 @@ runs:
     - name: Check PR
       id: check
       run: |
-    
-        python ${{ github.action_path }}/index.py > tmp_output.txt
-
-        # Write it to GITHUB_OUTPUT safely
+        python ${{ github.action_path }}/index.py > tmp
         echo "output<<EOF" >> $GITHUB_OUTPUT
-        cat tmp_output.txt >> $GITHUB_OUTPUT
+        cat tmp >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
       env:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
 
-    - run: echo "${{ steps.check.outputs.output }}"
-
     - name: Create comment
       uses: peter-evans/create-or-update-comment@v5
       with:
-        issue-number: 1
+        issue-number: ${{ github.event.pull_request.number }}
         comment-id: ${{ steps.fc.outputs.comment-id }}
         token: ${{ inputs.token }}
         body: ${{ steps.check.outputs.output }}
