@@ -17,6 +17,31 @@ runs:
       uses: peter-evans/find-comment@v3
       id: fc
       with:
-        issue-number: 1
+        issue-number: ${{ github.event.pull_request.number }}
         comment-author: ${{ inputs.comment-author }}
         token: ${{ inputs.token }}
+    
+    - run: echo Bot comment ${{ steps.fc.outputs.comment-id }}
+    - run: echo pull body "${{ github.event.pull_request.body }}"
+
+    - name: Check python version
+      run: python --version
+
+    - name: Check PR
+      id: check
+      run: |
+        python ${{ github.action_path }}/index.py > tmp
+        echo "output<<EOF" >> $GITHUB_OUTPUT
+        cat tmp >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+      env:
+        PR_DESCRIPTION: ${{ github.event.pull_request.body }}
+
+    - name: Create comment
+      uses: peter-evans/create-or-update-comment@v5
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-id: ${{ steps.fc.outputs.comment-id }}
+        token: ${{ inputs.token }}
+        body: ${{ steps.check.outputs.output }}
+        edit-mode: replace
