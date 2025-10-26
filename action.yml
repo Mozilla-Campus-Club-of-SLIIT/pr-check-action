@@ -33,8 +33,12 @@ runs:
     - name: Check PR
       id: check
       run: |
+    
+        python ${{ github.action_path }}/index.py > tmp_output.txt
+
+        # Write it to GITHUB_OUTPUT safely
         echo "output<<EOF" >> $GITHUB_OUTPUT
-        python ${{ github.action_path }}/index.py
+        cat tmp_output.txt >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
       env:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
