@@ -17,6 +17,16 @@ runs:
       uses: peter-evans/find-comment@v3
       id: fc
       with:
-        issue-number: 1
+        issue-number: ${{ github.events.pull_request.number }}
         comment-author: ${{ inputs.comment-author }}
         token: ${{ inputs.token }}
+    
+    - run: echo Bot comment ${{ steps.fc.outputs.comment-id }}
+
+    - name: Check python version
+      run: python --version
+
+    - name: Check PR
+      run: python index.py
+      env:
+        PR_DESCRIPTION: ${{ github.events.pull_request.body }}
