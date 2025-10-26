@@ -68,17 +68,25 @@ closing_terms = has_closing_terms(pr_description)
 
 if (not closing_terms) or is_not_closed:
     res = ""
-    if not closing_terms: res += "No closing terms\n"
+    
+    if not closing_terms:
+        res += "### ❌ Missing Closing Terms\n"
+        res += "This PR does not reference an issue with `closes`, `fixes`, or `resolves` keywords. "
+        res += "Please update the PR description to automatically close the relevant issue when merged.\n\n"
+    
     if is_not_closed:
-        res += "Unchecked checkboxes\n"
+        res += "### ❌ Unchecked Checkboxes\n"
+        res += "Some required checklist items in the PR description are not checked. Make sure all mandatory tasks are completed:\n"
         for unclosed_box_data in unclosed_boxes:
-            res += "{}: {} out of {} checkboxes are unchecked\n".format(
-                "General" if unclosed_box_data["group"] == "gh_action_default" else unclosed_box_data["group"],
-                unclosed_box_data["all"] - unclosed_box_data["checked"],
-                unclosed_box_data["all"]
-            )
+            group_name = "General" if unclosed_box_data["group"] == "gh_action_default" else unclosed_box_data["group"]
+            unchecked = unclosed_box_data["all"] - unclosed_box_data["checked"]
+            total = unclosed_box_data["all"]
+            res += f"- **{group_name}**: {unchecked} out of {total} checkboxes are unchecked\n"
+        res += "\nPlease ensure all items are completed before requesting a review.\n"
+    
     print(res)
     sys.exit(1)
 
-print("All good")
+print("✅ All checks passed")
+
 
