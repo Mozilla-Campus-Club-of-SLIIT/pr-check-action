@@ -22,13 +22,8 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Check PR
-        uses: Mozilla-Campus-Club-of-SLIIT/pr-check-action@main
+        uses: Mozilla-Campus-Club-of-SLIIT/pr-check-action@dev
         with:
           token: ${{ steps.app-token.outputs.bot_token }}
-          body: |
-            This is a multi-line test comment
-            - With GitHub **Markdown** :sparkles:
-            - Created by [create-or-update-comment][1]
+          comment-author: ${{ steps.app-token.outputs.bot_name}}[bot]
 
-            [1]: https://github.com/peter-evans/create-or-update-comment
-          reactions: '+1'
