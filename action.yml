@@ -29,14 +29,13 @@ runs:
         comment-author: ${{ inputs.comment-author }}
         token: ${{ inputs.token }}
     
-    - run: echo Bot comment ${{ steps.fc.outputs.comment-id }}
-    - run: echo pull body "${{ github.event.pull_request.body }}"
-
     - name: Check python version
       run: python --version
+      shell: sh
 
     - name: Check PR
       id: check
+      shell: sh
       run: |
         python ${{ github.action_path }}/index.py > tmp
         echo "output<<EOF" >> $GITHUB_OUTPUT
