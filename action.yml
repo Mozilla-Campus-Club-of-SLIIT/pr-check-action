@@ -28,10 +28,6 @@ runs:
         issue-number: ${{ github.event.pull_request.number }}
         comment-author: ${{ inputs.comment-author }}
         token: ${{ inputs.token }}
-    
-    - name: Check python version
-      run: python --version
-      shell: sh
 
     - name: Check PR
       id: check
@@ -61,9 +57,7 @@ runs:
         body: ${{ steps.check.outputs.output }}
         edit-mode: replace
 
-    - run: echo ${{ steps.check.outputs.exit_code }}
-      shell: sh
-
-    - name: Report status
-      run: exit ${{ steps.check.outputs.exit_code }}
+    - name: Report errors
+      if: ${{ steps.check.outputs.exit_code != '0' }}
+      run: exit 1
       shell: sh
