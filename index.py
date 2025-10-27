@@ -90,6 +90,6 @@ def main():
             errors.append(res)
 
     if len(errors) == 0: print("✅ All checks passed")
-    else: print("\n--\n".join(errors))
+    else: print("\n---\n".join(errors))
 
 main()
