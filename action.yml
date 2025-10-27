@@ -38,8 +38,11 @@ runs:
       continue-on-error: true
       shell: sh
       run: |
-        python ${{ github.action_path }}/index.py > tmp || true
-        exit_code=$?
+        if python ${{ github.action_path }}/index.py > tmp; then
+          exit_code=0
+        else
+          exit_code=$?
+        fi
         echo "output<<EOF" >> $GITHUB_OUTPUT
         cat tmp >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
