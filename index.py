@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 
 pr_description = os.getenv("PR_DESCRIPTION", "")
 check_closing = os.getenv("CHECK_CLOSING_STATEMENT", "false") == "true"
@@ -89,7 +90,10 @@ def main():
        
             errors.append(res)
 
-    if len(errors) == 0: print("✅ All checks passed")
+    no_errors = len(errors) == 0
+    if no_errors: print("✅ All checks passed")
     else: print("\n---\n".join(errors))
+
+    sys.exit(0 if no_errors else 1)
 
 main()
