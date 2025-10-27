@@ -39,9 +39,11 @@ runs:
       shell: sh
       run: |
         python ${{ github.action_path }}/index.py > tmp || true
+        exit_code=$?
         echo "output<<EOF" >> $GITHUB_OUTPUT
         cat tmp >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
+        echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
       env:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
         CHECK_CLOSING_STATEMENT: ${{ inputs.check-closing-statement }}
@@ -57,6 +59,6 @@ runs:
         edit-mode: replace
 
     - name: Report failure
-      if: ${{ failure() }}
+      if: ${{ steps.check.outputs.exit_code != 0 }}
       run: exit 1
       shell: sh
