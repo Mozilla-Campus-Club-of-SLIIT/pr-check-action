@@ -84,8 +84,14 @@ if (not closing_terms) or is_not_closed:
             group_name = "General" if unclosed_box_data["group"] == "gh_action_default" else unclosed_box_data["group"]
             unchecked = unclosed_box_data["all"] - unclosed_box_data["checked"]
             total = unclosed_box_data["all"]
-            group_msg = unchecked_box_group_message or "- **{group}**: {unchecked} out of {all} checkboxes are unchecked\n"
-            res += group_msg.format(group=group_name, unchecked=unchecked, all=total)
+            if unchecked_box_group_message:
+                group_msg_template = unchecked_box_group_message
+                if not group_msg_template.endswith("\n"):
+                    group_msg_template += "\n"
+            else:
+                group_msg_template = "- **{group}**: {unchecked} out of {all} checkboxes are unchecked\n"
+
+            res += group_msg_template.format(group=group_name, unchecked=unchecked, all=total)
         res += "\nPlease ensure all items are completed before requesting a review.\n"
     print(res)
     sys.exit(0)
