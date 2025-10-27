@@ -38,7 +38,7 @@ runs:
       continue-on-error: true
       shell: sh
       run: |
-        python ${{ github.action_path }}/index.py > tmp
+        python ${{ github.action_path }}/index.py > tmp || true
         echo "output<<EOF" >> $GITHUB_OUTPUT
         cat tmp >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
@@ -52,7 +52,6 @@ runs:
       shell: sh
 
     - name: Create comment
-      if: ${{ always() }}
       uses: peter-evans/create-or-update-comment@v5
       with:
         issue-number: ${{ github.event.pull_request.number }}
