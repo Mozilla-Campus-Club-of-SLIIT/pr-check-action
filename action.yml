@@ -47,6 +47,7 @@ runs:
         CHECK_UNCHECKED_BOXES: ${{ inputs.check-unchecked-boxes }}
 
     - name: Create comment
+      continue-on-error: true
       uses: peter-evans/create-or-update-comment@v5
       with:
         issue-number: ${{ github.event.pull_request.number }}
