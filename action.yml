@@ -10,6 +10,14 @@ inputs:
     description: The account's name which the command check review should be published. Use [bot] suffix for apps.
     required: false
     default: github-actions[bot]
+  check-closing-statement:
+    description: Run the closing statement checker ONLY if this input is set to true
+    required: false
+    default: false
+  check-unchecked-boxes:
+    description: Check if all checkboxes are checked ONLY if this input is set to true
+    required: false
+    default: false
 runs:
   using: composite
   steps:
@@ -36,6 +44,8 @@ runs:
         echo "EOF" >> $GITHUB_OUTPUT
       env:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
+        CHECK_CLOSING_STATEMENT: ${{ inputs.check-closing-statement }}
+        CHECK_UNCHECKED_BOXES: ${{ inputs.check-unchecked-boxes }}
 
     - name: Create comment
       uses: peter-evans/create-or-update-comment@v5
