@@ -48,6 +48,7 @@ runs:
         CHECK_UNCHECKED_BOXES: ${{ inputs.check-unchecked-boxes }}
 
     - name: Create comment
+      if: ${{ always() }}
       uses: peter-evans/create-or-update-comment@v5
       with:
         issue-number: ${{ github.event.pull_request.number }}
@@ -55,3 +56,8 @@ runs:
         token: ${{ inputs.token }}
         body: ${{ steps.check.outputs.output }}
         edit-mode: replace
+
+    - name: Report failure
+      if: ${{ failure() }}
+      run: exit 1
+      shell: sh
