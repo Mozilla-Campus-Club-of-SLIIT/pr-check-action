@@ -5,6 +5,7 @@ inputs:
   token:
     description: GITHUB_TOKEN or repo scoped PAT
     required: false
+    default: ${{ github.token }}
   comment-author:
     description: The account's name which the command check review should be published. Use [bot] suffix for apps.
     required: false
@@ -16,12 +17,12 @@ inputs:
     description: Custom error message when there are unchecked check boxes
     required: false
   unchecked-box-group-message:
-    description: Custom error message for each checkbox group. Parameters: {group}, {unchecked}, {all}
+    description: Custom error message for each checkbox group.
     required: false
   success-message:
     description: Custom success message
     required: false
-      
+
 runs:
   using: composite
   steps:
@@ -32,7 +33,7 @@ runs:
         issue-number: ${{ github.event.pull_request.number }}
         comment-author: ${{ inputs.comment-author }}
         token: ${{ inputs.token }}
-    
+
     - run: echo Bot comment ${{ steps.fc.outputs.comment-id }}
     - run: echo pull body "${{ github.event.pull_request.body }}"
 
