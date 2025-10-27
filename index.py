@@ -3,6 +3,10 @@ import os
 import re
 
 pr_description = os.getenv("PR_DESCRIPTION", "")
+no_closing_message = os.getenv("NO_CLOSING_MESSAGE")
+unchecked_boxes_message = os.getenv("UNCHECKED_BOXES_MESSAGE")
+unchecked_box_group_message = os.getenv("UNCHECKED_BOX_GROUP_MESSAGE")
+success_message = os.getenv("SUCCESS_MESSAGE")
 
 def has_closing_terms(description: str):
     match = re.search(
@@ -70,23 +74,24 @@ if (not closing_terms) or is_not_closed:
     res = ""
     
     if not closing_terms:
-        res += "### ❌ Missing Closing Terms\n"
+        res += (no_closing_message or "### ❌ Missing Closing Terms\n")
         res += "This PR does not reference an issue with `closes`, `fixes`, or `resolves` keywords. "
         res += "Please update the PR description to automatically close the relevant issue when merged.\n\n"
-    
+
     if is_not_closed:
-        res += "### ❌ Unchecked Checkboxes\n"
+        res += (unchecked_boxes_message or "### ❌ Unchecked Checkboxes\n")
         res += "Some required checklist items in the PR description are not checked. Make sure all mandatory tasks are completed:\n"
         for unclosed_box_data in unclosed_boxes:
             group_name = "General" if unclosed_box_data["group"] == "gh_action_default" else unclosed_box_data["group"]
             unchecked = unclosed_box_data["all"] - unclosed_box_data["checked"]
             total = unclosed_box_data["all"]
-            res += f"- **{group_name}**: {unchecked} out of {total} checkboxes are unchecked\n"
+            group_msg = unchecked_box_group_message or "- **{group}**: {unchecked} out of {all} checkboxes are unchecked\n"
+            res += group_msg.format(group=group_name, unchecked=unchecked, all=total)
         res += "\nPlease ensure all items are completed before requesting a review.\n"
     
     print(res)
     sys.exit(0)
 
-print("✅ All checks passed")
+print(success_message or"✅ All checks passed")
 
 

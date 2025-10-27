@@ -10,6 +10,19 @@ inputs:
     description: The account's name which the command check review should be published. Use [bot] suffix for apps.
     required: false
     default: github-actions[bot]
+  no-closing-message:
+    description: Custom error message when there are no closing statements
+    required: false
+  unchecked-boxes-message:
+    description: Custom error message when there are unchecked check boxes
+    required: false
+  unchecked-box-group-message:
+    description: Custom error message for each checkbox group. Parameters: {group}, {unchecked}, {all}
+    required: false
+  success-message:
+    description: Custom success message
+    required: false
+      
 runs:
   using: composite
   steps:
@@ -36,6 +49,10 @@ runs:
         echo "EOF" >> $GITHUB_OUTPUT
       env:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
+        NO_CLOSING_MESSAGE: ${{ inputs.no-closing-message }}
+        UNCHECKED_BOXES_MESSAGE: ${{ inputs.unchecked-boxes-message }}
+        UNCHECKED_BOX_GROUP_MESSAGE: ${{ inputs.unchecked-box-group-message }}
+        SUCCESS_MESSAGE: ${{ inputs.success-message }}
 
     - name: Create comment
       uses: peter-evans/create-or-update-comment@v5
