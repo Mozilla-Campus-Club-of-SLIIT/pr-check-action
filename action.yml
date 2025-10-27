@@ -36,6 +36,7 @@ runs:
 
     - run: echo Bot comment ${{ steps.fc.outputs.comment-id }}
     - run: echo pull body "${{ github.event.pull_request.body }}"
+      shell: bash
 
     - name: Check python version
       run: python --version
@@ -48,6 +49,7 @@ runs:
         echo "output<<EOF" >> $GITHUB_OUTPUT
         cat tmp >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
+      shell: bash
       env:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
         NO_CLOSING_MESSAGE: ${{ inputs.no-closing-message }}
