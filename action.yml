@@ -35,6 +35,7 @@ runs:
         token: ${{ inputs.token }}
 
     - run: echo Bot comment ${{ steps.fc.outputs.comment-id }}
+      shell: bash
     - run: echo pull body "${{ github.event.pull_request.body }}"
       shell: bash
 
