@@ -47,6 +47,10 @@ runs:
         CHECK_CLOSING_STATEMENT: ${{ inputs.check-closing-statement }}
         CHECK_UNCHECKED_BOXES: ${{ inputs.check-unchecked-boxes }}
 
+    - name: Check output
+      run: echo ${{ steps.check.outputs.output }}
+      shell: sh
+
     - name: Create comment
       if: ${{ always() }}
       uses: peter-evans/create-or-update-comment@v5
