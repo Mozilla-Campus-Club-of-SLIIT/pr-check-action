@@ -58,6 +58,9 @@ runs:
         body: ${{ steps.check.outputs.output }}
         edit-mode: replace
 
+    - run: echo ${{ steps.check.outputs.exit_code }}
+      shell: sh
+
     - name: Report status
       run: exit ${{ steps.check.outputs.exit_code }}
       shell: sh
