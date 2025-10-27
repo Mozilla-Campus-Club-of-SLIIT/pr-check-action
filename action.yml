@@ -39,6 +39,7 @@ runs:
 
     - name: Check python version
       run: python --version
+      shell: bash
 
     - name: Check PR
       id: check
