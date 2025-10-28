@@ -95,7 +95,7 @@ def main():
                 unchecked = unclosed_box_data["all"] - unclosed_box_data["checked"]
                 total = unclosed_box_data["all"]
                 line_template = unchecked_box_group_message or default_unchecked_group_line
-                res += line_template.format(group=group_name, unchecked=unchecked, all=total)
+                res += line_template.format(group=group_name, unchecked=unchecked, all=total).rstrip() + "\n"
             if not unchecked_boxes_message:
                 res += default_unchecked_boxes_footer
             errors.append(res)
