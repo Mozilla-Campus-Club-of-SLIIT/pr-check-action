@@ -81,7 +81,7 @@ def main():
             ))
   
     if check_boxes:
-        [ _, unclosed_boxes ] = has_unclosed_checkboxes(pr_description)
+        [ is_not_closed, unclosed_boxes ] = has_unclosed_checkboxes(pr_description)
         if unclosed_boxes:
             res = unchecked_boxes_message+"\n" or (
                 "### ❌ Unchecked Checkboxes\n"
