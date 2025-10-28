@@ -86,7 +86,7 @@ def main():
     if check_boxes:
         has_errors, unclosed_boxes = has_unclosed_checkboxes(pr_description)
         if has_errors:
-            res = unchecked_boxes_message or default_unchecked_boxes_message
+            res = (unchecked_boxes_message or default_unchecked_boxes_message) + "\n"
             for unclosed_box_data in unclosed_boxes:
                 group_name = (
                     "General" if unclosed_box_data["group"] == "gh_action_default"
