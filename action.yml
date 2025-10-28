@@ -59,9 +59,6 @@ runs:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
         CHECK_CLOSING_STATEMENT: ${{ inputs.check-closing-statement }}
         CHECK_UNCHECKED_BOXES: ${{ inputs.check-unchecked-boxes }}
-        PR_DESCRIPTION: ${{ github.event.pull_request.body }}
-        CHECK_CLOSING_STATEMENT: ${{ inputs.check-closing-statement }}
-        CHECK_UNCHECKED_BOXES: ${{ inputs.check-unchecked-boxes }}
         NO_CLOSING_MESSAGE: ${{ inputs.no-closing-message }}
         UNCHECKED_BOXES_MESSAGE: ${{ inputs.unchecked-boxes-message }}
         UNCHECKED_BOX_GROUP_MESSAGE: ${{ inputs.unchecked-box-group-message }}
