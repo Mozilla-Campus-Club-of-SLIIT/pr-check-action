@@ -83,7 +83,7 @@ def main():
     if check_boxes:
         [ _, unclosed_boxes ] = has_unclosed_checkboxes(pr_description)
         if unclosed_boxes:
-            res = unchecked_boxes_message or (
+            res = unchecked_boxes_message+"\n" or (
                 "### ❌ Unchecked Checkboxes\n"
                 "Some required checklist items in the PR description are not checked. "
                 "Make sure all mandatory tasks are completed:\n"
