@@ -1,28 +1,10 @@
-import sys
 import os
 import re
+import sys
 
 pr_description = os.getenv("PR_DESCRIPTION", "")
-no_closing_message = os.getenv("NO_CLOSING_MESSAGE")
-unchecked_boxes_message = os.getenv("UNCHECKED_BOXES_MESSAGE")
-unchecked_box_group_message = os.getenv("UNCHECKED_BOX_GROUP_MESSAGE")
-success_message = os.getenv("SUCCESS_MESSAGE")
-
-DEFAULT_NO_CLOSING_MESSAGE = "### ❌ Missing Closing Terms\n"
-DEFAULT_UNCHECKED_BOXES_MESSAGE = "### ❌ Unchecked Checkboxes\n"
-DEFAULT_UNCHECKED_BOX_GROUP_MESSAGE = "- **{group}**: {unchecked} out of {all} checkboxes are unchecked\n"
-DEFAULT_SUCCESS_MESSAGE = "✅ All checks passed\n"
-DEFAULT_NO_CLOSING_EXPLANATION = (
-    "This PR does not reference an issue with `closes`, `fixes`, or `resolves` keywords. "
-    "Please update the PR description to automatically close the relevant issue when merged.\n\n"
-)
-DEFAULT_UNCHECKED_BOXES_EXPLANATION = (
-    "Some required checklist items in the PR description are not checked. "
-    "Make sure all mandatory tasks are completed:\n"
-)
-DEFAULT_UNCHECKED_BOXES_FINAL = (
-    "\nPlease ensure all items are completed before requesting a review.\n"
-)
+check_closing = os.getenv("CHECK_CLOSING_STATEMENT", "false") == "true"
+check_boxes = os.getenv("CHECK_UNCHECKED_BOXES", "false") == "true"
 
 def has_closing_terms(description: str):
     match = re.search(
@@ -74,37 +56,39 @@ def has_unclosed_checkboxes(description: str):
             ignore_following = True
 
     errors = get_checkbox_errors(checkboxes)
-    return [len(errors) != 0, errors]
+    return [ len(errors) != 0, errors ]    
+    
+def main():
+    errors = []
 
-closing_terms = has_closing_terms(pr_description)
-[is_not_closed, unclosed_boxes] = has_unclosed_checkboxes(pr_description)
+    if check_closing:
+        closing_terms = has_closing_terms(pr_description)
+        if not closing_terms:
+            errors.append("{}\n{}\n{}\n".format(
+                "### ❌ Missing Closing Terms",
+                "This PR does not reference an issue with `closes`, `fixes`, or `resolves` keywords.",
+                "Please update the PR description to automatically close the relevant issue when merged."
+            ))
+  
+    if check_boxes:
+        [ is_not_closed, unclosed_boxes ] = has_unclosed_checkboxes(pr_description)
+        if is_not_closed:
+            res = ""
+            res += "### ❌ Unchecked Checkboxes\n"
+            res += "Some required checklist items in the PR description are not checked. Make sure all mandatory tasks are completed:\n"
+            for unclosed_box_data in unclosed_boxes:
+                group_name = "General" if unclosed_box_data["group"] == "gh_action_default" else unclosed_box_data["group"]
+                unchecked = unclosed_box_data["all"] - unclosed_box_data["checked"]
+                total = unclosed_box_data["all"]
+                res += f"- **{group_name}**: {unchecked} out of {total} checkboxes are unchecked\n"
+            res += "\nPlease ensure all items are completed before requesting a review.\n"
+       
+            errors.append(res)
 
-if (not closing_terms) or is_not_closed:
-    res = ""
-    if not closing_terms:
-        res += (no_closing_message or DEFAULT_NO_CLOSING_MESSAGE) + "\n"
-        res += DEFAULT_NO_CLOSING_EXPLANATION
+    no_errors = len(errors) == 0
+    if no_errors: print("✅ All checks passed")
+    else: print("\n---\n".join(errors))
 
-    if is_not_closed:
-        res += (unchecked_boxes_message or DEFAULT_UNCHECKED_BOXES_MESSAGE) + "\n"
-        res += DEFAULT_UNCHECKED_BOXES_EXPLANATION
-        for unclosed_box_data in unclosed_boxes:
-            group_name = "General" if unclosed_box_data["group"] == "gh_action_default" else unclosed_box_data["group"]
-            unchecked = unclosed_box_data["all"] - unclosed_box_data["checked"]
-            total = unclosed_box_data["all"]
+    sys.exit(0 if no_errors else 1)
 
-            if unchecked_box_group_message:
-                group_msg_template = unchecked_box_group_message
-                if not group_msg_template.endswith("\n"):
-                    group_msg_template += "\n"
-            else:
-                group_msg_template = DEFAULT_UNCHECKED_BOX_GROUP_MESSAGE
-
-            res += group_msg_template.format(group=group_name, unchecked=unchecked, all=total)
-
-        res += DEFAULT_UNCHECKED_BOXES_FINAL
-
-    print(res)
-    sys.exit(0)
-
-print(success_message or DEFAULT_SUCCESS_MESSAGE)
+main()

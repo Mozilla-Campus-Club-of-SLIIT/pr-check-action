@@ -10,19 +10,14 @@ inputs:
     description: The account's name which the command check review should be published. Use [bot] suffix for apps.
     required: false
     default: github-actions[bot]
-  no-closing-message:
-    description: Custom error message when there are no closing statements
+  check-closing-statement:
+    description: Run the closing statement checker ONLY if this input is set to true
     required: false
-  unchecked-boxes-message:
-    description: Custom error message when there are unchecked check boxes
+    default: false
+  check-unchecked-boxes:
+    description: Check if all checkboxes are checked ONLY if this input is set to true
     required: false
-  unchecked-box-group-message:
-    description: Custom error message for each checkbox group.
-    required: false
-  success-message:
-    description: Custom success message
-    required: false
-
+    default: false
 runs:
   using: composite
   steps:
@@ -34,29 +29,24 @@ runs:
         comment-author: ${{ inputs.comment-author }}
         token: ${{ inputs.token }}
 
-    - run: echo Bot comment ${{ steps.fc.outputs.comment-id }}
-      shell: bash
-    - run: echo pull body "${{ github.event.pull_request.body }}"
-      shell: bash
-
-    - name: Check python version
-      run: python --version
-      shell: bash
-
     - name: Check PR
       id: check
+      continue-on-error: true
+      shell: sh
       run: |
-        python ${{ github.action_path }}/index.py > tmp
+        if python ${{ github.action_path }}/index.py > tmp; then
+          exit_code=0
+        else
+          exit_code=$?
+        fi
         echo "output<<EOF" >> $GITHUB_OUTPUT
         cat tmp >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
-      shell: bash
+        echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
       env:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
-        NO_CLOSING_MESSAGE: ${{ inputs.no-closing-message }}
-        UNCHECKED_BOXES_MESSAGE: ${{ inputs.unchecked-boxes-message }}
-        UNCHECKED_BOX_GROUP_MESSAGE: ${{ inputs.unchecked-box-group-message }}
-        SUCCESS_MESSAGE: ${{ inputs.success-message }}
+        CHECK_CLOSING_STATEMENT: ${{ inputs.check-closing-statement }}
+        CHECK_UNCHECKED_BOXES: ${{ inputs.check-unchecked-boxes }}
 
     - name: Create comment
       uses: peter-evans/create-or-update-comment@v5
@@ -66,3 +56,8 @@ runs:
         token: ${{ inputs.token }}
         body: ${{ steps.check.outputs.output }}
         edit-mode: replace
+
+    - name: Report errors
+      if: ${{ steps.check.outputs.exit_code != '0' }}
+      run: exit 1
+      shell: sh
