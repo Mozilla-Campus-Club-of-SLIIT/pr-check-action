@@ -18,6 +18,18 @@ inputs:
     description: Check if all checkboxes are checked ONLY if this input is set to true
     required: false
     default: false
+  no-closing-message:
+    description: Custom message when no closing statement found
+    required: false
+  unchecked-boxes-message:
+    description: Custom message when there are unchecked checkboxes
+    required: false
+  unchecked-box-group-message:
+    description: Custom message template for each checkbox group. Use placeholders {group}, {unchecked}, {all}
+    required: false
+  success-message:
+    description: Custom message when all checks pass
+    required: false
 runs:
   using: composite
   steps:
@@ -47,7 +59,13 @@ runs:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
         CHECK_CLOSING_STATEMENT: ${{ inputs.check-closing-statement }}
         CHECK_UNCHECKED_BOXES: ${{ inputs.check-unchecked-boxes }}
-
+        PR_DESCRIPTION: ${{ github.event.pull_request.body }}
+        CHECK_CLOSING_STATEMENT: ${{ inputs.check-closing-statement }}
+        CHECK_UNCHECKED_BOXES: ${{ inputs.check-unchecked-boxes }}
+        NO_CLOSING_MESSAGE: ${{ inputs.no-closing-message }}
+        UNCHECKED_BOXES_MESSAGE: ${{ inputs.unchecked-boxes-message }}
+        UNCHECKED_BOX_GROUP_MESSAGE: ${{ inputs.unchecked-box-group-message }}
+        SUCCESS_MESSAGE: ${{ inputs.success-message }}
     - name: Create comment
       uses: peter-evans/create-or-update-comment@v5
       with:
