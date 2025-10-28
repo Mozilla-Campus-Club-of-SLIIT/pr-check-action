@@ -3,8 +3,8 @@ import re
 import sys
 
 pr_description = os.getenv("PR_DESCRIPTION", "")
-check_closing = os.getenv("CHECK_CLOSING_STATEMENT", "false") == "true"
-check_boxes = os.getenv("CHECK_UNCHECKED_BOXES", "false") == "true"
+check_closing = os.getenv("CHECK_CLOSING_STATEMENT", "false").lower() == "true"
+check_boxes = os.getenv("CHECK_UNCHECKED_BOXES", "false").lower() == "true"
 
 no_closing_message = os.getenv("NO_CLOSING_MESSAGE", "").strip()
 unchecked_boxes_message = os.getenv("UNCHECKED_BOXES_MESSAGE", "").strip()
@@ -29,25 +29,17 @@ default_unchecked_boxes_footer = "\nPlease ensure all items are completed before
 default_success_message = "✅ All checks passed"
 
 def has_closing_terms(description: str):
-    match = re.search(
+    return bool(re.search(
         r"(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved):?\s#\d+",
         description,
         flags=re.MULTILINE | re.IGNORECASE
-    )
-    return match is not None
+    ))
 
 def get_checkbox_errors(checkboxes):
-    default_group = "gh_action_default"
-    errors = [
-        {"group": default_group, "all": c["all"], "checked": c["checked"]}
-        for g, c in checkboxes.items()
-        if g == default_group and c["checked"] != c["all"]
-    ]
-    errors += [
-        {"group": g, "all": c["all"], "checked": c["checked"]}
-        for g, c in checkboxes.items()
-        if g != default_group and c["checked"] == 0
-    ]
+    errors = []
+    for g, c in checkboxes.items():
+        if c["checked"] != c["all"]:
+            errors.append({"group": g, "all": c["all"], "checked": c["checked"]})
     return errors
 
 def has_unclosed_checkboxes(description: str):
@@ -56,26 +48,31 @@ def has_unclosed_checkboxes(description: str):
     ignore_following = False
 
     for line in description.splitlines():
+        line = line.strip()
         if ignore_following:
             ignore_following = False
             continue
-        line = line.strip()
-        if (not line.startswith("- [")) and (not line.startswith("<!-- ")):
+        if line.startswith("<!-- ignore following -->"):
+            ignore_following = True
             continue
-        if line.startswith("- [ ]"):
-            checkboxes[active_group or "gh_action_default"]["all"] += 1
-        elif line.startswith("- [X]"):
-            checkboxes[active_group or "gh_action_default"]["all"] += 1
-            checkboxes[active_group or "gh_action_default"]["checked"] += 1
-        elif line.startswith("<!-- begin radio"):
+        if line.startswith("<!-- begin radio"):
             group_name = line[len("<!-- begin radio "):-len(" -->")]
             active_group = group_name
             if active_group not in checkboxes:
                 checkboxes[active_group] = {"all": 0, "checked": 0}
-        elif line.startswith("<!-- end radio"):
+            continue
+        if line.startswith("<!-- end radio"):
             active_group = None
-        elif line == "<!-- ignore following -->":
-            ignore_following = True
+            continue
+        if not line.startswith("- ["):
+            continue
+
+        group = active_group or "gh_action_default"
+        if line.startswith("- [ ]"):
+            checkboxes[group]["all"] += 1
+        elif line.startswith("- [X]"):
+            checkboxes[group]["all"] += 1
+            checkboxes[group]["checked"] += 1
 
     errors = get_checkbox_errors(checkboxes)
     return [len(errors) != 0, errors]
@@ -83,17 +80,18 @@ def has_unclosed_checkboxes(description: str):
 def main():
     errors = []
 
-    if check_closing:
-        closing_terms = has_closing_terms(pr_description)
-        if not closing_terms:
-            errors.append(no_closing_message or default_no_closing_message)
+    if check_closing and not has_closing_terms(pr_description):
+        errors.append(no_closing_message or default_no_closing_message)
 
     if check_boxes:
-        [is_not_closed, unclosed_boxes] = has_unclosed_checkboxes(pr_description)
-        if is_not_closed:
+        has_errors, unclosed_boxes = has_unclosed_checkboxes(pr_description)
+        if has_errors:
             res = unchecked_boxes_message or default_unchecked_boxes_message
             for unclosed_box_data in unclosed_boxes:
-                group_name = "General" if unclosed_box_data["group"] == "gh_action_default" else unclosed_box_data["group"]
+                group_name = (
+                    "General" if unclosed_box_data["group"] == "gh_action_default"
+                    else unclosed_box_data["group"]
+                )
                 unchecked = unclosed_box_data["all"] - unclosed_box_data["checked"]
                 total = unclosed_box_data["all"]
                 line_template = unchecked_box_group_message or default_unchecked_group_line
