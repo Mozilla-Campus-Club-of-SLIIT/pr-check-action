@@ -5,6 +5,10 @@ import sys
 pr_description = os.getenv("PR_DESCRIPTION", "")
 check_closing = os.getenv("CHECK_CLOSING_STATEMENT", "false") == "true"
 check_boxes = os.getenv("CHECK_UNCHECKED_BOXES", "false") == "true"
+no_closing_message = os.getenv("NO_CLOSING_MESSAGE", "").strip()
+unchecked_boxes_message = os.getenv("UNCHECKED_BOXES_MESSAGE", "").strip()
+unchecked_box_group_message = os.getenv("UNCHECKED_BOX_GROUP_MESSAGE", "").strip()
+success_message = os.getenv("SUCCESS_MESSAGE", "").strip()
 
 def has_closing_terms(description: str):
     match = re.search(
@@ -69,7 +73,7 @@ def main():
     if check_closing:
         closing_terms = has_closing_terms(pr_description)
         if not closing_terms:
-            errors.append("{}\n{}\n{}\n".format(
+            errors.append(no_closing_message or "{}\n{}\n{}\n".format(
                 "### ❌ Missing Closing Terms",
                 "This PR does not reference an issue with `closes`, `fixes`, or `resolves` keywords.",
                 "Please update the PR description to automatically close the relevant issue when merged."
@@ -78,20 +82,22 @@ def main():
     if check_boxes:
         [ is_not_closed, unclosed_boxes ] = has_unclosed_checkboxes(pr_description)
         if is_not_closed:
-            res = ""
-            res += "### ❌ Unchecked Checkboxes\n"
-            res += "Some required checklist items in the PR description are not checked. Make sure all mandatory tasks are completed:\n"
+            res = unchecked_boxes_message or (
+                "### ❌ Unchecked Checkboxes\n"
+                "Some required checklist items in the PR description are not checked. "
+                "Make sure all mandatory tasks are completed:\n"
+            )
             for unclosed_box_data in unclosed_boxes:
                 group_name = "General" if unclosed_box_data["group"] == "gh_action_default" else unclosed_box_data["group"]
                 unchecked = unclosed_box_data["all"] - unclosed_box_data["checked"]
                 total = unclosed_box_data["all"]
                 res += f"- **{group_name}**: {unchecked} out of {total} checkboxes are unchecked\n"
-            res += "\nPlease ensure all items are completed before requesting a review.\n"
-       
+            if not unchecked_boxes_message:
+                res += "\nPlease ensure all items are completed before requesting a review.\n"
             errors.append(res)
 
     no_errors = len(errors) == 0
-    if no_errors: print("✅ All checks passed")
+    if no_errors: print(success_message or "✅ All checks passed" if no_errors else "\n---\n".join(errors))
     else: print("\n---\n".join(errors))
 
     sys.exit(0 if no_errors else 1)
