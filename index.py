@@ -80,25 +80,28 @@ def main():
             ))
   
     if check_boxes:
-        [ is_not_closed, unclosed_boxes ] = has_unclosed_checkboxes(pr_description)
-        if is_not_closed:
+        [ _, unclosed_boxes ] = has_unclosed_checkboxes(pr_description)
+        if unclosed_boxes:
             res = unchecked_boxes_message or (
                 "### ❌ Unchecked Checkboxes\n"
                 "Some required checklist items in the PR description are not checked. "
                 "Make sure all mandatory tasks are completed:\n"
             )
             for unclosed_box_data in unclosed_boxes:
-                group_name = "General" if unclosed_box_data["group"] == "gh_action_default" else unclosed_box_data["group"]
-                unchecked = unclosed_box_data["all"] - unclosed_box_data["checked"]
-                total = unclosed_box_data["all"]
-                res += f"- **{group_name}**: {unchecked} out of {total} checkboxes are unchecked\n"
+                if unclosed_box_data["checked"] != unclosed_box_data["all"]:
+                    group_name = "General" if unclosed_box_data["group"] == "gh_action_default" else unclosed_box_data["group"]
+                    unchecked = unclosed_box_data["all"] - unclosed_box_data["checked"]
+                    total = unclosed_box_data["all"]
+                    res += f"- **{group_name}**: {unchecked} out of {total} checkboxes are unchecked\n"
             if not unchecked_boxes_message:
                 res += "\nPlease ensure all items are completed before requesting a review.\n"
             errors.append(res)
 
+
     no_errors = len(errors) == 0
-    if no_errors: print(success_message or "✅ All checks passed" if no_errors else "\n---\n".join(errors))
-    else: print("\n---\n".join(errors))
+    if no_errors: print(success_message or "✅ All checks passed")
+    else: "\n---\n".join(errors)
+
 
     sys.exit(0 if no_errors else 1)
 
