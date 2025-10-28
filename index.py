@@ -87,7 +87,7 @@ def main():
                 "### ❌ Unchecked Checkboxes\n"
                 "Some required checklist items in the PR description are not checked. "
                 "Make sure all mandatory tasks are completed:\n"
-            )
+            )+"\n"
             for unclosed_box_data in unclosed_boxes:
                 if unclosed_box_data["checked"] != unclosed_box_data["all"]:
                     group_name = "General" if unclosed_box_data["group"] == "gh_action_default" else unclosed_box_data["group"]
