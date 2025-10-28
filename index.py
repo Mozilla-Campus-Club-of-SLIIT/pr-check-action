@@ -100,7 +100,7 @@ def main():
 
     no_errors = len(errors) == 0
     if no_errors: print(success_message or "✅ All checks passed")
-    else: "\n---\n".join(errors)
+    else: print("\n---\n".join(errors))
 
 
     sys.exit(0 if no_errors else 1)
