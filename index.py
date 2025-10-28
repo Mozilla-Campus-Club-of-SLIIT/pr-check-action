@@ -24,14 +24,15 @@ def get_checkbox_errors(checkboxes):
     errors = [
         {"group": default_group, "all": c["all"], "checked": c["checked"]}
         for g, c in checkboxes.items()
-        if (g == default_group and c["checked"] != c["all"])
+        if g == default_group and c["checked"] != c["all"]
     ]
     errors += [
         {"group": g, "all": c["all"], "checked": c["checked"]}
         for g, c in checkboxes.items()
-        if g != default_group and c["checked"] == 0
+        if g != default_group and c["checked"] != c["all"]
     ]
     return errors
+
 
 
 def has_unclosed_checkboxes(description: str):
