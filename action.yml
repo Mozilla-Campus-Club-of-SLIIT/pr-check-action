@@ -1,4 +1,4 @@
-name: pr-check-action
+name: PR Policy Checker
 author: Mozilla-Campus-Club-of-SLIIT
 description: Ensures PR compliance with project guidelines
 branding:
