@@ -5,10 +5,14 @@ import sys
 pr_description = os.getenv("PR_DESCRIPTION", "")
 check_closing = os.getenv("CHECK_CLOSING_STATEMENT", "false") == "true"
 check_boxes = os.getenv("CHECK_UNCHECKED_BOXES", "false") == "true"
+require_nondefault_branch = os.getenv("REQUIRE_NONDEFAULT_BRANCH", "") == "true"
 no_closing_message = os.getenv("NO_CLOSING_MESSAGE", "").strip()
 unchecked_boxes_message = os.getenv("UNCHECKED_BOXES_MESSAGE", "").strip()
 unchecked_box_group_message = os.getenv("UNCHECKED_BOX_GROUP_MESSAGE", "").strip()
+branch_error_message = os.getenv("BRANCH_ERROR_MESSAGE", "").strip()
 success_message = os.getenv("SUCCESS_MESSAGE", "").strip()
+default_branch_name = os.getenv("DEFAULT_BRANCH", "").strip()
+pr_branch_name = os.getenv("PR_BRANCH", "").strip()
 
 default_no_closing_message = (
     "### ❌ Missing Closing Terms\n"
@@ -20,6 +24,12 @@ default_unchecked_boxes_message = (
     "### ❌ Unchecked Checkboxes\n"
     "Some required checklist items in the PR description are not checked. "
     "Make sure all mandatory tasks are completed:\n"
+)
+
+default_branch_error_message = (
+    "### ❌ PR not allowed from default branch\n\n"
+    "This pull request originates from the repository default branch `{head}` and targets `{base}`, which is not allowed.\n\n"
+    "Action required: create a new branch from the default branch, push your changes to that branch, and open (or update) the PR from the new branch.\n"
 )
 
 default_unchecked_box_group_message = "- **{group}**: {unchecked} out of {all} checkboxes are unchecked\n"
@@ -107,6 +117,14 @@ def main():
             if not unchecked_boxes_message:
                 res += "\nPlease ensure all items are completed before requesting a review.\n"
             errors.append(res)
+
+    if require_nondefault_branch and default_branch_name == pr_branch_name:
+        errors.append(
+            (branch_error_message or default_branch_error_message).format(
+                base=default_branch_name, head=pr_branch_name
+            )
+        )
+
 
 
     no_errors = len(errors) == 0
