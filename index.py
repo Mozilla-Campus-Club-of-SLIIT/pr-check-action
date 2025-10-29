@@ -14,6 +14,8 @@ success_message = os.getenv("SUCCESS_MESSAGE", "").strip()
 default_branch_name = os.getenv("DEFAULT_BRANCH", "").strip()
 pr_branch_name = os.getenv("PR_BRANCH", "").strip()
 
+print(default_branch_name, pr_branch_name, require_nondefault_branch)
+
 default_no_closing_message = (
     "### ❌ Missing Closing Terms\n"
     "This PR does not reference an issue with `closes`, `fixes`, or `resolves` keywords.\n"
