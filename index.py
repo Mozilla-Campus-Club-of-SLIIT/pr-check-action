@@ -29,7 +29,7 @@ def get_checkbox_errors(checkboxes):
     errors += [
         {"group": g, "all": c["all"], "checked": c["checked"]}
         for g, c in checkboxes.items()
-        if g != default_group and c["checked"] != c["all"]
+        if g != default_group and c["checked"] == 0
     ]
     return errors
 
@@ -82,7 +82,7 @@ def main():
   
     if check_boxes:
         [ is_not_closed, unclosed_boxes ] = has_unclosed_checkboxes(pr_description)
-        if unclosed_boxes:
+        if  is_not_closed:
             res = unchecked_boxes_message+"\n" or (
                 "### ❌ Unchecked Checkboxes\n"
                 "Some required checklist items in the PR description are not checked. "
@@ -93,7 +93,10 @@ def main():
                     group_name = "General" if unclosed_box_data["group"] == "gh_action_default" else unclosed_box_data["group"]
                     unchecked = unclosed_box_data["all"] - unclosed_box_data["checked"]
                     total = unclosed_box_data["all"]
-                    res += f"- **{group_name}**: {unchecked} out of {total} checkboxes are unchecked\n"
+
+                    line_template = unchecked_box_group_message or "- **{group}**: {unchecked} out of {all} checkboxes are unchecked\n"
+                    res += line_template.format(group=group_name, unchecked=unchecked, all=total)
+
             if not unchecked_boxes_message:
                 res += "\nPlease ensure all items are completed before requesting a review.\n"
             errors.append(res)
