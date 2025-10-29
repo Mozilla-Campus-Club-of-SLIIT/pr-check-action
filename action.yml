@@ -18,6 +18,10 @@ inputs:
     description: Check if all checkboxes are checked ONLY if this input is set to true
     required: false
     default: false
+  require-nondefault-branch:
+    description: Check if the PR is originating from a non-default branch
+    required: false
+    default: false
   no-closing-message:
     description: Custom message when no closing statement found
     required: false
@@ -26,6 +30,9 @@ inputs:
     required: false
   unchecked-box-group-message:
     description: Custom message template for each checkbox group. Use placeholders {group}, {unchecked}, {all}
+    required: false
+  branch-error-message:
+    description: Custom message when the PR is not originating from a non-default branch
     required: false
   success-message:
     description: Custom message when all checks pass
@@ -59,6 +66,9 @@ runs:
         PR_DESCRIPTION: ${{ github.event.pull_request.body }}
         CHECK_CLOSING_STATEMENT: ${{ inputs.check-closing-statement }}
         CHECK_UNCHECKED_BOXES: ${{ inputs.check-unchecked-boxes }}
+        REQUIRE_NONDEFAULT_BRANCH: ${{ inputs.require-nondefault-branch }}
+        DEFAULT_BRANCH: ${{ github.event.pull_request.base.repo.default_branch }}
+        PR_BRANCH: ${{ github.event.pull_request.head.ref }}
         NO_CLOSING_MESSAGE: ${{ inputs.no-closing-message }}
         UNCHECKED_BOXES_MESSAGE: ${{ inputs.unchecked-boxes-message }}
         UNCHECKED_BOX_GROUP_MESSAGE: ${{ inputs.unchecked-box-group-message }}

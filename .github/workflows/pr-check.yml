@@ -26,4 +26,7 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.bot_token }}
           comment-author: ${{ steps.app-token.outputs.bot_name}}[bot]
+          check-closing-statement: true
+          check-unchecked-boxes: true
+          require-nondefault-branch: true
 
