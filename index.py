@@ -14,8 +14,6 @@ success_message = os.getenv("SUCCESS_MESSAGE", "").strip()
 default_branch_name = os.getenv("DEFAULT_BRANCH", "").strip()
 pr_branch_name = os.getenv("PR_BRANCH", "").strip()
 
-print(default_branch_name, pr_branch_name, require_nondefault_branch)
-
 default_no_closing_message = (
     "### ❌ Missing Closing Terms\n"
     "This PR does not reference an issue with `closes`, `fixes`, or `resolves` keywords.\n"
@@ -30,7 +28,7 @@ default_unchecked_boxes_message = (
 
 default_branch_error_message = (
     "### ❌ PR not allowed from default branch\n\n"
-    "This pull request originates from the repository default branch '{head}' and targets '{base}', which is not allowed.\n\n"
+    "This pull request originates from the repository default branch `{head}` and targets `{base}`, which is not allowed.\n\n"
     "Action required: create a new branch from the default branch, push your changes to that branch, and open (or update) the PR from the new branch.\n"
 )
 
