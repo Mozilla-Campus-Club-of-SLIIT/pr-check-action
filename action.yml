@@ -1,6 +1,9 @@
-name: PR Check
+name: pr-check-action
 author: Mozilla-Campus-Club-of-SLIIT
 description: Ensures PR compliance with project guidelines
+branding:
+  icon: git-pull-request
+  color: purple
 inputs:
   token:
     description: GITHUB_TOKEN or repo scoped PAT
