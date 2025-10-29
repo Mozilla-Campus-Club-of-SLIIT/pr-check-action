@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check PR
-        uses: Mozilla-Campus-Club-of-SLIIT/pr-check-action@main
+        uses: Mozilla-Campus-Club-of-SLIIT/pr-check-action@v1
         with:
           check-closing-statement: true
           check-unchecked-boxes: true
