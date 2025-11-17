@@ -76,7 +76,7 @@ def has_unclosed_checkboxes(description: str):
         if (not line.startswith("- [")) and (not line.startswith("<!-- ")): continue
         if line.startswith("- [ ]"):
             checkboxes[active_group or "gh_action_default"]["all"] += 1
-        elif line.startswith("- [X]"):
+        elif line.startswith("- [X]") or line.startswith("- [x]"):
             checkboxes[active_group or "gh_action_default"]["all"] += 1
             checkboxes[active_group or "gh_action_default"]["checked"] += 1
         elif line.startswith("<!-- begin radio"):
