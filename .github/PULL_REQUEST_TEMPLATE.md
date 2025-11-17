@@ -1,11 +1,14 @@
 This PR closes #ISSUE_ID
 
 ### Type of Change
+<!-- Please do not remove the comments -->
+<!-- begin radio type -->
 - [ ] Bug fix 🐛
 - [ ] New feature ✨
 - [ ] Documentation update 📚
 - [ ] Refactor 🔨
 - [ ] Other (please describe)
+<!-- end radio type -->
 
 ### Checklist
 - [ ] I’ve read the contributing guidelines  
@@ -16,7 +19,7 @@ This PR closes #ISSUE_ID
   - [ ] `npm run format` (if applicable)
   - [ ] `npm run lint` (if applicable)
   - [ ] `npm test` (if applicable)
-- [ ] I've added closing terms (eg: closes, resolves, fixes #1)
+- [ ] I've added closing terms (eg: closes, resolves, fixes)
 
 ### Description
 Briefly describe what this PR does.
