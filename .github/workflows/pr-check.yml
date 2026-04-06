@@ -18,8 +18,8 @@ jobs:
         uses: wow-actions/use-app-token@v2
         id: app-token
         with:
-          app_id: ${{ vars.APP_ID }}
-          private_key: ${{ secrets.PRIVATE_KEY }}
+          app_id: ${{ vars.MOXY_APP_ID }}
+          private_key: ${{ secrets.MOXY_PRIVATE_KEY }}
 
       - name: Check PR
         uses: Mozilla-Campus-Club-of-SLIIT/pr-check-action@main
